@@ -19,7 +19,9 @@
     var globalShortcut = require('electron').globalShortcut;
     var ContextMenu = require('electron-context-menu');
 
-    const isAlreadyRunning = app.makeSingleInstance((argv, workingDir) => {
+
+    app.requestSingleInstanceLock();
+	app.on('second-instance', (event, argv, cwd) => {
         if (whatsApp.window) {
             if (whatsApp.window.isMinimized()) {
                 whatsApp.window.restore();
@@ -50,10 +52,6 @@
             );
         }
     });
-
-    if (isAlreadyRunning) {
-        app.quit();
-    }
 
     app.setAppUserModelId("it.enrico204.whatsapp-desktop");
     app.setAsDefaultProtocolClient("whatsapp");
@@ -354,6 +352,7 @@
             whatsApp.clearCache();
             whatsApp.openWindow();
             config.applyConfiguration();
+
         },
 
         createMenu() {
@@ -503,7 +502,10 @@
                 window: whatsApp.window
             });
 
-            whatsApp.window.loadURL('https://web.whatsapp.com');
+            whatsApp.window.loadURL('https://web.whatsapp.com', 
+            {
+                userAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36"
+            });
 
             whatsApp.window.webContents.on('did-finish-load', function() {
                 if (groupLinkOpenRequested != null) {
