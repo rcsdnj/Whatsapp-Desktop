@@ -5,7 +5,7 @@
     var AppMenu = require('electron').Menu;
     var MenuItem = require('electron').MenuItem;
     var AppTray = require('electron').Tray;
-    var fileSystem = require('fs');
+    var fileSystem = require('fs-extra');
     var NativeImage = require('electron').nativeImage;
     var BrowserWindow = require('electron').BrowserWindow;
     var nodeGettext = require('node-gettext');
@@ -472,7 +472,8 @@
         clearCache() {
             log.info("Clearing cache");
             try {
-                fileSystem.unlinkSync(app.getPath('userData') + '/Application Cache/Index');
+                fileSystem.removeSync(app.getPath('userData') + '/Service Worker');
+                fileSystem.removeSync(app.getPath('userData') + '/Application Cache/Index');
             } catch(e) {
                 log.warn("Error clearing cache: " + e);
             }
@@ -502,6 +503,7 @@
                 window: whatsApp.window
             });
 
+            whatsApp.window.webContents.setUserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36");
             whatsApp.window.loadURL('https://web.whatsapp.com', 
             {
                 userAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36"
